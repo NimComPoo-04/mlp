@@ -1,0 +1,12 @@
+DONE 1. Program a Perceptron then train the network to behave like the basic gates with gradient descent. 
+	AND, OR, NOT, NAND, NOR
+
+2. Program a multilayer sigmoid neuron with back propagation
+	XOR, XNOR
+
+3. Build a general perpose system to allow creation of neural network with minimal effort
+	Sin, Cos, Tan
+
+4. Optimize matrix multiplication and storage
+
+5. Train on the minist dataset

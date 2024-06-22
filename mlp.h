@@ -37,15 +37,11 @@ void mlp_apply_grad(mlp_t *m, mlp_t *d_m, float count, float rate);
 
 typedef struct
 {
-	float *data;	// stores location and input and expected value
-	int stride;	// starting point of expected vaue
-	int chunk_size; // size of a single element i.e. [input, expected value]
-	int size;	// size of the whole data 
+	float *input;
+	float *expected;
 } traning_data_t;
 
-// initiates a single training sequence
-void mlp_train(mlp_t *model, mlp_t *dmod, traning_data_t *td, float *out, float *dc_da, float rate);
-float mlp_cost(mlp_t *model, traning_data_t *td, float *out);
+float mlp_train(mlp_t *m, mlp_t *dm, traning_data_t *td, int count, float *out, float *dc_da, float rate);
 
 void mlp_print(mlp_t *m);
 void mlp_free(mlp_t *m);

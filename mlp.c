@@ -7,7 +7,7 @@
 #include "mlp.h"
 
 #define RAND_VAL 1.0
-#define TANH
+#define SIGMOID
 #define DISPLAY_IN
 
 void mlp_layer_create(mlp_layer_t *m, int rows, int cols, int randomize)
@@ -214,37 +214,25 @@ void mlp_apply_grad(mlp_t *m, mlp_t *d_m, float count, float rate)
 	}
 }
 
-float mlp_cost(mlp_t *model, traning_data_t *td, float *out)
+float mlp_train(mlp_t *m, mlp_t *dm, traning_data_t *td, int count, float *out, float *dc_da, float rate)
 {
-	int count = td->size / td->chunk_size;
 	float cost = 0;
 
-	// loops through the training data
-	for(int i = 0; i < td->size; i += td->chunk_size)
+	for(int i = 0; i < count; i++)
 	{
-		mlp_forward(model, td->data + i, out);
+		mlp_forward(m, td[i].input, out);
 
-		// for each chunk it calculates the cost of that thing
-		for(int j = 0; j < td->chunk_size; j++)
+		for(int j = 0; j < m->layers[m->count - 1].rows; j++)
 		{
-			float d = out[j] - (td->data + td->stride + i)[j];
-			cost += d * d;
+			float f = (out[j] - td[i].expected[j]); 
+			cost += f * f;
 		}
+
+		mlp_backprop(m, dm, out, td[i].expected, dc_da);
 	}
 
-	cost /= count;
-	return cost;
+	mlp_apply_grad(m, dm, 2 * count, rate);
+
+	return cost / count;
 }
 
-void mlp_train(mlp_t *model, mlp_t *dmod, traning_data_t *td, float *out, float *dc_da, float rate)
-{
-	int count = td->size / td->chunk_size;
-
-	for(int i = 0; i < td->size; i += td->chunk_size)
-	{
-		mlp_forward(model, (td->data + i), out);
-		mlp_backprop(model, dmod, out, (td->data + i + td->stride), dc_da);
-	}
-
-	mlp_apply_grad(model, dmod, 2 * count, rate);
-}

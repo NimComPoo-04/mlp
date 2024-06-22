@@ -12,52 +12,30 @@ int main(void)
 	mlp_t model = mlp_create(layers, sizeof layers / sizeof layers[0], layers[0]);
 	mlp_t dmod  = mlp_copy_arch(&model);
 
-	float input[][2] = {
-		{0, 0},
-		{0, 1},
-		{1, 0},
-		{1, 1},
+	traning_data_t td[] = {
+		{(float []){0, 0}, (float []){1}},
+		{(float []){0, 1}, (float []){0.7}},
+		{(float []){1, 0}, (float []){0}},
+		{(float []){1, 1}, (float []){1}},
 	};
 
-	float expected[] = {
-		0.7, 0.3, 0.1, 0.56
-	};
-
-#define count (sizeof expected / sizeof expected[0])
-	float output[count] = {0};
-	float tmp[count] = {0};
-
+	float dc_da = 0;
+	float output = 0;
 	float cost = 0;
 
-	//while(getc(stdin) == '\n')
+	for(int k = 0; k < 1000 * 100; k++)
 	{
+		cost = mlp_train(&model, &dmod, td, sizeof td / sizeof td[0], &output, &dc_da, 0.15);
+	}
 
-		for(int k = 0; k < 1000 * 100; k++)
-		{
-			for(int i = 0; i < count; i++)
-			{
-				mlp_forward(&model, input[i], output + i);
-				mlp_backprop(&model, &dmod, output + i, expected + i, tmp + i);
-			}
+	mlp_print(&model);
 
-			mlp_apply_grad(&model, &dmod, 2 * count, 1E-2);
-		}
+	printf("cost = %f\n", cost);
 
-		mlp_print(&model);
-
-
-		printf("output = ");
-
-		cost = 0;
-		for(int i = 0; i < count; i++)
-		{
-			printf("%f  ", output[i]);
-			cost += (output[i] - expected[i]) * (output[i] - expected[i]);
-		}
-		cost /= count;
-
-		puts("");
-		printf("cost = %f\n\n", cost);
+	for(int i = 0; i < sizeof td / sizeof td[0]; i++)
+	{
+		mlp_forward(&model, td[i].input, &output);
+		printf("%d | %f * %f = %f \n", i + 1, td[i].input[0], td[i].input[1], output);
 	}
 
 	return 0;
