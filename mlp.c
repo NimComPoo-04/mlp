@@ -7,7 +7,7 @@
 #include "mlp.h"
 
 #define RAND_VAL 1.0
-#define SIGMOID
+#define TANH
 #define DISPLAY_IN
 
 void mlp_layer_create(mlp_layer_t *m, int rows, int cols, int randomize)

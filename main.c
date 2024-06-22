@@ -5,10 +5,15 @@
 
 int main(void)
 {
-	int layers[] = {3, 3, 2};
+	printf("..binary Adder using neural network..\n\n");
+
+	int layers[] = {3, 2};
 
 	mlp_t model = mlp_create(layers, sizeof layers / sizeof layers[0], layers[0]);
 	mlp_t dmod  = mlp_copy_arch(&model);
+
+	printf("..fnitial State before training..\n");
+	mlp_print(&model);
 
 	traning_data_t td[] = {
 		{(float []){0, 0, 0}, (float []){0, 0}},
@@ -28,13 +33,14 @@ int main(void)
 	int epochs = 1000 * 200;
 	for(int k = 0; k < epochs; k++)
 	{
-		cost = mlp_train(&model, &dmod, td, sizeof td / sizeof td[0], output, dc_da, 0.01);
+		cost = mlp_train(&model, &dmod, td, sizeof td / sizeof td[0], output, dc_da, 0.001);
 
 		if(k % (epochs / 10) == 0)
 			printf("cost = %f\n", cost);
 	}
 
 	puts("");
+	printf("..final state after training..\n");
 	mlp_print(&model);
 
 
