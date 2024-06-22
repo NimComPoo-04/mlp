@@ -30,10 +30,10 @@ int main(void)
 	float output[2] = {0};
 	float cost = 0;
 
-	int epochs = 1000 * 200;
+	int epochs = 1000 * 500;
 	for(int k = 0; k < epochs; k++)
 	{
-		cost = mlp_train(&model, &dmod, td, sizeof td / sizeof td[0], output, dc_da, 0.001);
+		cost = mlp_train(&model, &dmod, td, sizeof td / sizeof td[0], output, dc_da, 1E-3);
 
 		if(k % (epochs / 10) == 0)
 			printf("cost = %f\n", cost);
@@ -49,7 +49,7 @@ int main(void)
 		mlp_forward(&model, td[i].input, output);
 
 		printf("%d | %f %f %f = %f %f\n",
-				i,
+				i + 1,
 				td[i].input[0],
 				td[i].input[1],
 				td[i].input[2],
