@@ -1,0 +1,4 @@
+*.o
+example/binadd
+example/sine
+

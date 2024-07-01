@@ -7,8 +7,8 @@ typedef struct
 	int cols;		// number of perceptron in the previous layer
 
 	float *weights;		// weight matrix  (rows x cols)
-	float *bias;		// bias vector (rows x 1)
-	float *in;		// input vector saved for backprop (cols x 1)
+	float *bias;		// bias vector (rows x 1) float *in;		// input vector saved for backprop (cols x 1)
+	float *in;		// input vector
 } mlp_layer_t;
 
 typedef struct
