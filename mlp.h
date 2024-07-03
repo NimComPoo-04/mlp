@@ -46,4 +46,11 @@ float mlp_train(mlp_t *m, mlp_t *dm, traning_data_t *td, int count, float *out, 
 void mlp_print(mlp_t *m);
 void mlp_free(mlp_t *m);
 
+float mlp_activation(float x);
+float mlp_d_activation(float a);
+
+#define RAND_VAL 1.0
+#define TANH
+#define DISPLAY_IN
+
 #endif

@@ -6,10 +6,6 @@
 
 #include "mlp.h"
 
-#define RAND_VAL 1.0
-#define TANH
-#define DISPLAY_IN
-
 void mlp_layer_create(mlp_layer_t *m, int rows, int cols, int randomize)
 {
 	srand(time(0));
@@ -31,35 +27,35 @@ void mlp_layer_create(mlp_layer_t *m, int rows, int cols, int randomize)
 		m->bias[i] = (randomize ? RAND_VAL * rand() / RAND_MAX : 0);
 }
 
-static inline float activation(float x)
+// if you want to define your own activation for some odd reason
+#ifndef MLP_ACTIVATION_DEFINED
+
+float mlp_activation(float x)
 {
 #if defined(SIGMOID)
 	 return 1.0 / (1.0 + expf(-x));
 #elif defined(TANH)
 	 return tanh(x);
-	 /*
 #elif defined(RELU)
 	 return (x > 0 ? x : 0);
-	 */
 #else
 #error "Activation Function Not Defined"
 #endif
 }
 
-static inline float d_activation(float a)
+float mlp_d_activation(float a)
 {
 #if defined(SIGMOID)
 	return a * (1 - a);
 #elif defined(TANH)
 	return 1 - a * a;
-	/*
 #elif defined(RELU)
 	 return (a > 0 ? 1 : 0);
-	 */
 #else
 #error "Activation Function Not Defined"
 #endif
 }
+#endif
 
 void mlp_layer_forward(mlp_layer_t *layers, int count, float *exp)
 {
@@ -74,7 +70,7 @@ void mlp_layer_forward(mlp_layer_t *layers, int count, float *exp)
 			{
 				out[j] += layers[i].in[k] * layers[i].weights[j * layers[i].cols + k];
 			}
-			out[j] = activation(out[j]);
+			out[j] = mlp_activation(out[j]);
 		}
 	}
 }
@@ -168,7 +164,7 @@ void mlp_layer_backprop(mlp_layer_t *m, mlp_layer_t *d_m, float *a, float *dc_da
 
 	for(int i = 0; i < d_m->rows; i++)
 	{
-		float t = dc_da[i] * d_activation(a[i]);
+		float t = dc_da[i] * mlp_d_activation(a[i]);
 
 		d_m->bias[i] += t;
 
