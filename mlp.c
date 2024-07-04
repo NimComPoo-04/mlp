@@ -21,10 +21,10 @@ void mlp_layer_create(mlp_layer_t *m, int rows, int cols, int randomize)
 	m->in = calloc(sizeof(float), cols);
 
 	for(int i = 0; i < rows * cols; i++)
-		m->weights[i] = (randomize ? RAND_VAL * rand() / RAND_MAX : 0);
+		m->weights[i] = (randomize ? RAND_VAL * (1.0 * rand() / RAND_MAX - 0.5) : 0);
 
 	for(int i = 0; i < rows; i++)
-		m->bias[i] = (randomize ? RAND_VAL * rand() / RAND_MAX : 0);
+		m->bias[i] = (randomize ? RAND_VAL * (1.0 * rand() / RAND_MAX - 0.5) : 0);
 }
 
 // if you want to define your own activation for some odd reason
@@ -37,7 +37,7 @@ float mlp_activation(float x)
 #elif defined(TANH)
 	 return tanh(x);
 #elif defined(RELU)
-	 return (x > 0 ? x : 0);
+	 return (x > 0 ? x : 0.1 * x);
 #else
 #error "Activation Function Not Defined"
 #endif
@@ -50,7 +50,7 @@ float mlp_d_activation(float a)
 #elif defined(TANH)
 	return 1 - a * a;
 #elif defined(RELU)
-	 return (a > 0 ? 1 : 0);
+	 return (a > 0 ? 1 : 0.1);
 #else
 #error "Activation Function Not Defined"
 #endif
@@ -198,13 +198,13 @@ void mlp_apply_grad(mlp_t *m, mlp_t *d_m, float count, float rate)
 	{
 		for(int i = 0; i < m->layers[k].rows * m->layers[k].cols; i++)
 		{
-			m->layers[k].weights[i] -= rate * d_m->layers[k].weights[i] / 1.0f * count;
+			m->layers[k].weights[i] -= rate * d_m->layers[k].weights[i] / count;
 			d_m->layers[k].weights[i] = 0;
 		}
 
 		for(int i = 0; i < m->layers[k].rows; i++)
 		{
-			m->layers[k].bias[i] -= rate * d_m->layers[k].bias[i] / 1.0f * count;
+			m->layers[k].bias[i] -= rate * d_m->layers[k].bias[i] / count;
 			d_m->layers[k].bias[i]  = 0;
 		}
 	}
@@ -227,7 +227,7 @@ float mlp_train(mlp_t *m, mlp_t *dm, traning_data_t *td, int count, float *out, 
 		mlp_backprop(m, dm, out, td[i].expected, dc_da);
 	}
 
-	mlp_apply_grad(m, dm, 2 * count, rate);
+	mlp_apply_grad(m, dm, count, rate);
 
 	return cost / count;
 }

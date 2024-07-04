@@ -45,16 +45,16 @@ int main(void)
 	float output[1] = {0};
 	float cost = 0;
 
-	int epochs = 1000 * 500;
+	int epochs = 2000 * 100;
 
 	int tk = 0;
-	int chunk_size = 100;
+	int chunk_size = 500;
 
 	for(int k = 0; k < epochs; k++)
 	{
-		cost = mlp_train(&model, &dmod, td + tk * chunk_size, chunk_size, output, dc_da, 1E-7);
+		cost = mlp_train(&model, &dmod, td + tk * chunk_size, chunk_size, output, dc_da, 0.03);
 
-		if(k % (epochs / 10) == 0)
+		if(k % (epochs / 20) == 0)
 			printf("cost = %f\n", cost);
 
 		tk = (tk + 1) % (count / chunk_size);

@@ -6,7 +6,7 @@
 #include <mlp.h>
 
 #define PI 3.1415
-#define count 2000
+#define count 100
 
 float tb[count * 2] = {0};
 traning_data_t td[count] = {0};
@@ -38,10 +38,10 @@ int main(void)
 	float cost = 0;
 
 	int tk = 0;
-	int chunk_size = 500;
-	float rate = 1E-6;
+	int chunk_size = 100;
+	float rate = 0.3;
 
-	int layers[] = {5, 7, 1};
+	int layers[] = {8, 8, 8, 8, 8, 1};
 
 	mlp = mlp_create(layers, sizeof layers / sizeof(int), 1);
 	mlp_t dmod  = mlp_copy_arch(&mlp);
@@ -59,7 +59,7 @@ int main(void)
 
 		if(should_play)
 		{
-			for(int i = 0; i < 10; i++)
+			for(int i = 0; i < 100; i++)
 			{
 				cost = mlp_train(&mlp, &dmod, td, chunk_size, output, dc_da, rate);
 				iteration++;
@@ -68,8 +68,8 @@ int main(void)
 			static int t = 4;
 			if(cost < 0.003 && chunk_size < count)
 			{
-				rate = rate / 4;
-				chunk_size += 500;
+			//	rate = rate / 1.4;
+				chunk_size += 100;
 			}
 		}
 
@@ -123,7 +123,7 @@ void draw_image(int x, int y, int width, int height)
 	h = ((1.0f - out) / 2.0 * height);
 	prevout = h;
 
-	for(float i = 2 * PI / count; i <= 2 * PI; i += 2 * PI / count)
+	for(float i = 2 * PI / (2 * count); i <= 2 * PI; i += 2 * PI / (2 * count))
 	{
 		actual = sinf(i) * cosf(3 * i) * i / (2 * PI);
 
